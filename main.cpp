@@ -7,7 +7,6 @@
 
 using namespace std;
 
-
 ///////////////////////////////////////////////////
 
 /////////////////////////STRUCTS DEL PROGRAMA///////////
@@ -31,7 +30,7 @@ typedef struct nodoArbol3 NodoArbol3;
 struct insumo{
 	int cod_in;
 	string nom_in;
-	string desc_in;
+	string cat_in;
 	string imag_in;
 	float precio_in;
 };
@@ -59,14 +58,14 @@ struct nodoArbol1{
 };
 
 struct nodo{
-       int dato;        
+       string dato;        
        struct nodo *next;
 };
 typedef struct nodo *ListaEn;
 
 /////////////////////////////////////////////////////////////////////////
 
-void insertarInicio(ListaEn &lista, int valor){
+void insertarInicio(ListaEn &lista, string valor){
      ListaEn lista1;
      lista1 = new(struct nodo);
      lista1->dato = valor;
@@ -74,7 +73,7 @@ void insertarInicio(ListaEn &lista, int valor){
      lista  = lista1;
 }
 
-void insertarFinal(ListaEn &lista, int valor){
+void insertarFinal(ListaEn &lista, string valor){
     ListaEn t, q = new(struct nodo);
  
     q->dato  = valor;
@@ -102,7 +101,7 @@ int insertarAntesDespues(){
     cout<<"\t 1. Antes de la posicion           "<<endl;
     cout<<"\t 2. Despues de la posicion         "<<endl;
  
-    cout<<"\n\t Opcion : "; cin>> _op;
+    cout<<"\n\t Opcion : "; cin>> op;
  
     if(op==1)
         band = -1;
@@ -112,7 +111,7 @@ int insertarAntesDespues(){
     return band;
 }
 
-void insertarElemento(ListaEn &lista, int valor, int pos){
+void insertarElemento(ListaEn &lista, string valor, int pos){
   
     ListaEn q, t;
     int i;
@@ -143,7 +142,7 @@ void insertarElemento(ListaEn &lista, int valor, int pos){
     cout<<"   Error...Posicion no encontrada..!"<<endl;
 }
 
-void buscarElemento(ListaEn lista, int valor){
+void buscarElemento(ListaEn lista, string valor){
     
     ListaEn q = lista;
     int i = 1, busc = 0;
@@ -175,8 +174,35 @@ void ImprimirLista(ListaEn lista){
      }
 }
 
+void eliminarElemento(ListaEn &lista, string valor)
+{
+    ListaEn p, ant;
+    p = lista;
+ 
+    if(lista!=NULL)
+    {
+        while(p!=NULL)
+        {
+            if(p->dato==valor)
+            {
+                if(p==lista)
+                    lista = lista->next;
+                else
+                    ant->next = p->next;
+ 
+                delete(p);
+                return;
+            }
+            ant = p;
+            p = p->next;
+        }
+    }
+    else
+        cout<<" Lista vacia..!";
+}
 
 /////////////////////////////////////////////////////////////////////////////
+///////////////////////////clientes//////////////////////////////////////////////////
 Cliente* crearCliente(int cod, string nom, string ape, string dni, string tel){
     Cliente* c = (Cliente*)malloc(sizeof(Cliente));
     c->cod_cl=cod;
@@ -260,18 +286,17 @@ nodoArbol1* eliminarCliente(nodoArbol1* a,Cliente* c){
         
     }
     return a;
-    
-    
+      
 }
 
 
 ///////////////////////////////////////////////////////////////////////
-
-Insumo* crearInsumo(int codIn, string nombIn, string descIn, string imagIn, float precioIn){
+///////////////////////////INSUMOS//////////////////////////////////////////////////
+Insumo* crearInsumo(int codIn, string nombIn, string catIn, string imagIn, float precioIn){
     Insumo* i= (Insumo*)malloc(sizeof(Insumo));
     i->cod_in = codIn;
     i->nom_in = nombIn;
-    i->desc_in = descIn;
+    i->cat_in = catIn;
     i->imag_in = imagIn;
     i->precio_in = precioIn;
     return i;
@@ -282,7 +307,7 @@ void imprimirInsumo(Insumo* t){
         printf("\n----------------------------------");
         printf("\nCodigo: %i ", t->cod_in); 
         cout<<"\nNombre: "<<t->nom_in;
-        cout<<"\nDescripcion: "<<t->desc_in;
+        cout<<"\nDescripcion: "<<t->cat_in;
         cout<<"\nPresentacion: "<<t->imag_in;
         printf("\nPrecio: %.2f ", t->precio_in);
         printf("\n----------------------------------");
@@ -305,17 +330,17 @@ void imprimirArbol(NodoArbol* n){
     }
 }
 //METODO BUSCAR
-Insumo * buscar(NodoArbol * a , string s){
+Insumo * buscar(NodoArbol * a , int s){
     if (a == NULL){
         cout<<"es nulo\n";
         return NULL;
     }
-    else if (s.compare(a->info->nom_in) == 0)   
-        return a->info; 
-    else if (s.compare(a->info->nom_in) > 0)   
+    else if (a->info->cod_in > s)   
+        return(buscar(a->izq, s)); 
+    else if (a->info->cod_in < s)   
         return(buscar(a->der, s));   
     else 
-        return(buscar(a->izq, s));
+        return a->info;
 }
 //METODO INSERTAR
 NodoArbol* insertarInsumo(NodoArbol* nodo, Insumo* t){
@@ -325,9 +350,9 @@ NodoArbol* insertarInsumo(NodoArbol* nodo, Insumo* t){
         nodo->izq = NULL;   
         nodo->der = NULL;   
     }
-    else if (t->nom_in.compare(nodo->info->nom_in) < 0)   
+    else if (t->cod_in < nodo->info->cod_in)   
         nodo->izq = insertarInsumo(nodo->izq, t);   
-    else if(t->nom_in.compare(nodo->info->nom_in) > 0)   
+    else if(t->cod_in > nodo->info->cod_in)   
         nodo->der = insertarInsumo(nodo->der, t); 
  return nodo;
 }
@@ -336,9 +361,9 @@ NodoArbol* retirarInsumo(NodoArbol* r, Insumo* v){
     NodoArbol *t, *f;   
     if (r == NULL)   
         return NULL;   
-    else if (v->nom_in.compare(r->info->nom_in) < 0)   
+    else if (r->info->cod_in > v->cod_in)   
         r->izq = retirarInsumo(r->izq, v);   
-    else if (v->nom_in.compare(r->info->nom_in) > 0)   
+    else if (r->info->cod_in < v->cod_in)   
         r->der = retirarInsumo(r->der, v);   
     else { // encontro el nodo a retirar
         if (r->izq == NULL && r->der == NULL){
@@ -367,9 +392,22 @@ NodoArbol* retirarInsumo(NodoArbol* r, Insumo* v){
     }
     return r;
 }
+void listarInsumos(){
+  int opt=0;
+  string categoria;
+  do{
+    cout<<"Ingrese la categoria que desea listar: "; cin>>categoria;
+  }while(opt != 0);
+}
+void buscarInsumo(){
+  
+}
+void eliminarInsumo(){
+  
+}
 
-
-////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////
+///////////////////////////VENTAS//////////////////////////////////////////////////
 Ventas* crearVentas(string cod,string nom_cli,string nom_pro,int cantidad,float precioUnit,float precioTotal){
     
     Ventas* node=(Ventas*)malloc(sizeof(Ventas));
@@ -481,47 +519,133 @@ NodoArbol3 *retirar(NodoArbol3 *nodo, Ventas* v){
     return nodo;
 }
 
-/////////////////////////////////////////////////////////////
-void LeerArchivo(){
+/////////////////////////////////////////////////////////////////
 
-   ifstream archivo("Libro2.csv");
-   string linea;
+
+/////////////////////////////////////////////////////////////////////////////
+/////////////////////////LEER ARCHIVOS//////////////////////////////
+void AlmacenarArchivo(ListaEn &lista,ListaEn &lista1){
+
+  
+   ifstream archivo("Insumos.csv");
+   ifstream archivo1("Clientes.csv");
+   string linea,linea1;
    char delimitador=',';
+  
    getline(archivo,linea);
+   getline(archivo1,linea1);
+  
    while(getline(archivo,linea)){
     stringstream stream(linea); // Convertir la cadena a un stream
-        string idProducto, codigoBarras, descripcion, precioCompra,     precioVenta, existencia, stock;
+        string CODIGO,NOMBRES,CATEGORIAS,IMAGENES,PRECIOS;
      
         // Extraer todos los valores de esa fila
-        getline(stream, idProducto, delimitador);
-        getline(stream, codigoBarras, delimitador);
-        getline(stream, descripcion, delimitador);
-        getline(stream, precioCompra, delimitador);
-        getline(stream, precioVenta, delimitador);
-        getline(stream, existencia, delimitador);
-        getline(stream, stock, delimitador);
-        // Imprimir
-        cout << "==================" << endl;
-        cout << "Id: " << idProducto << endl;
-        cout << "Codigo de barras: " << codigoBarras << endl;
-        cout << "Descripcion: " << descripcion << endl;
-        cout << "Precio de compra: " << precioCompra << endl;
-        cout << "Precio de venta: " << precioVenta << endl;
-        cout << "Existencia: " << existencia << endl;
-        cout << "Stock: " << stock << endl;
+        getline(stream, CODIGO, delimitador);
+        getline(stream, NOMBRES, delimitador);
+        getline(stream, CATEGORIAS, delimitador);
+        getline(stream, IMAGENES, delimitador);
+        getline(stream, PRECIOS, delimitador);
 
+        insertarInicio(lista, CODIGO);
+        insertarInicio(lista, NOMBRES);
+        insertarInicio(lista, CATEGORIAS);
+        insertarInicio(lista, IMAGENES);
+        insertarInicio(lista,PRECIOS);
      
+        // Imprimir
+        //cout << "==================================" << endl;
+        //cout << " CODIGO: " << CODIGO << endl;
+        //cout << " NOMBRE: " << NOMBRES << endl;
+        //cout << " CATEGORIA: " << CATEGORIAS << endl;
+        //cout << " IMAGEN DE VENTA: " << IMAGENES << endl;
+        //cout << " Precio de venta: " << PRECIOS << endl;
    }
-   
   
+   while(getline(archivo1,linea1)){
+     stringstream stream(linea1); // Convertir la cadena a un stream
+        string codigo,nombre,apellido,dni,telefono;
+     
+        // Extraer todos los valores de esa fila
+        getline(stream, codigo, delimitador);
+        getline(stream, nombre, delimitador);
+        getline(stream, apellido, delimitador);
+        getline(stream, dni, delimitador);
+        getline(stream, telefono, delimitador);
+
+        insertarInicio(lista1, codigo);
+        insertarInicio(lista1, nombre);
+        insertarInicio(lista1, apellido);
+        insertarInicio(lista1, dni);
+        insertarInicio(lista1, telefono);
+         // Imprimir
+        //cout << "==================" << endl;
+        //cout << " CODIGO: " << codigo << endl;
+        //cout << " NOMBRE: " << nombre << endl;
+        //cout << " CATEGORIA: " << apellido << endl;
+        //cout << " IMAGEN DE VENTA: " <<dni << endl;
+        //cout << " Precio de venta: " <<telefono  << endl; 
+   }  
 }
 
+void subMenuInsumos(){
+    int opcion=0,opc2=0;
+    string num;
+    while(opcion!=5){
+        
+    cout << "----------------------------------" << endl;
+		cout << "\t\t\tMENU" << endl;
+		cout << "----------------------------------" << endl;
+		cout << "||  [1] Listar insumos" << endl;
+		cout << "||  [2] Buscar insumos" << endl;
+		cout << "||  [3] Eliminar insumos" << endl;
+		cout << "||  [4] Volver al menu" << endl;
+        cout << "||    Digite una opcion \t"; 
+        cin>>opc2;
+        switch(opc2){
+            case 1:
+                
+                break;
+            case 2:
+                
+                break;
+            case 3:
+                
+                break;
+            case 4:
+                
+                break;
+        }
+    }
+}
 
-/////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////
+void Exis
+
+
+void Agregar_Venta(){
+   string codCli=0;
+   string codIns=0;
+   bool existCli,existInsu;
+  
+  cout<<"Digite el codigo del cliente";
+  cin>>codCli;
+  cout<<"Digite el codigo del insumo";
+  cin>>codIns;
+
+  existCli=ExisteCliente();
+  existInsu=ExisteInsumo();
+  
+
+  
+}
+////////////////////////////////FUNCION PRINCIPAL///////////////////////////////////////
 int main()
 {
-	 cout<<"Hello World";
-    LeerArchivo();
+	ListaEn Lista=NULL,Lista1=NULL;
+  AlmacenarArchivo(Lista,Lista1);
 
+  //ImprimirLista(Lista);
+  //ImprimirLista(Lista1);
+  subMenuInsumos();
     return 0;
 }
