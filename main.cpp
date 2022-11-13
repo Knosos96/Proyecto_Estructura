@@ -420,12 +420,7 @@ NodoArbol* retirarInsumo(NodoArbol* r, Insumo* v){
     return r;
 }
 void listarInsumos(){
-  int opt=0;
-  string categoria;
-  do{
-    cout<<"Ingrese la categoria que desea listar: "; cin>>categoria;
-    if()
-  }while(opt != 0);
+  
 }
 void buscarInsumo(){
   
