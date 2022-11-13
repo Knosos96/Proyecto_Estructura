@@ -240,6 +240,32 @@ void mostrarArbol(nodoArbol1 *a){
         mostrarArbol(a->der);
     }
 }
+void menuCliente(nodoArbol1 *a){
+    int opcion=0;
+    cout<<"*------------------------------*"<<endl;
+    cout<<"\tMenu Clientes"<<endl;
+    cout<<"*------------------------------*"<<endl;
+    cout<<"1.Listar Cliente"<<endl;
+    cout<<"2.Buscar Cliente"<<endl;
+    cout<<"3.Eliminar Cliente"<<endl;
+    cout<<"4.Volver al menu principal"<<endl;
+    cout<<"Digite una opción: ";
+    cin>>opcion;
+    switch(opcion){
+        case 1:
+            mostrarArbol(a);
+            break;
+        case 2:
+            //buscarCliente(a,buscar);
+            break;
+        case 3:
+            //eliminarCliente(a,c2);
+            break;
+        case 4:
+            break;
+    }
+}
+
 Cliente* buscarCliente(nodoArbol1 *a, string b){
     if (a == NULL){
         cout<<"No existe el cliente"<<endl;
