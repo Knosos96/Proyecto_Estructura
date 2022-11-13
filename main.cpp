@@ -153,6 +153,7 @@ string buscarElemento(ListaEn lista, string valor){
         {
             cout<<endl<<" Encontrada en posicion "<< i <<endl;
             busc = 1;
+            return q->dato;
         }
         q = q->next;
         i++;
@@ -397,6 +398,7 @@ void listarInsumos(){
   string categoria;
   do{
     cout<<"Ingrese la categoria que desea listar: "; cin>>categoria;
+    if()
   }while(opt != 0);
 }
 void buscarInsumo(){
@@ -619,8 +621,8 @@ void subMenuInsumos(){
 }
 
 ////////////////////////////////////////////////////////////////
-void ExisteCliente(ListaEn lista,bool codcli){
-  
+bool ExisteCliente(ListaEn lista,string codcli){
+  buscarElemento(lista, valor)
   if()
 }
 
