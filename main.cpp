@@ -509,13 +509,34 @@ void LeerArchivo(){
         cout << "Precio de venta: " << precioVenta << endl;
         cout << "Existencia: " << existencia << endl;
         cout << "Stock: " << stock << endl;
-
+	
      
    }
    
   
 }
+void AgregarClientetxt(int cod, string nom, string ape, string dni, string num){
+    
+    ofstream archivo;
+    archivo.open("Clientes.txt", ios::app);
+    if (archivo.good()) {
+	    
+	    archivo << "Informacion del Cliente:" <<  endl;
+	    archivo << "*\tCodigo: " << cod << endl;
+	    archivo << "*\tNombre: " << nom << endl;
+	    archivo << "*\tApellido: " << ape << endl;
+	    archivo << "*\tDNI: " << dni << endl;
+	    archivo << "*\tTelefono: " << num << endl;
+	    archivo << "\n" << endl;
+	    archivo.close();
+        
+	}
+	else{
+	     cout << "\n Error al querer agregar un cliente \n";
+	     
+	}
 
+}
 
 /////////////////////////////////////////////////////////////
 int main()
