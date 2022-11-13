@@ -142,7 +142,7 @@ void insertarElemento(ListaEn &lista, string valor, int pos){
     cout<<"   Error...Posicion no encontrada..!"<<endl;
 }
 
-void buscarElemento(ListaEn lista, string valor){
+string buscarElemento(ListaEn lista, string valor){
     
     ListaEn q = lista;
     int i = 1, busc = 0;
@@ -619,7 +619,10 @@ void subMenuInsumos(){
 }
 
 ////////////////////////////////////////////////////////////////
-void Exis
+void ExisteCliente(ListaEn lista,bool codcli){
+  
+  if()
+}
 
 
 void Agregar_Venta(){
@@ -632,8 +635,8 @@ void Agregar_Venta(){
   cout<<"Digite el codigo del insumo";
   cin>>codIns;
 
-  existCli=ExisteCliente();
-  existInsu=ExisteInsumo();
+  existCli=ExisteCliente(,codCli);
+  existInsu=ExisteInsumo(,codIns);
   
 
   
