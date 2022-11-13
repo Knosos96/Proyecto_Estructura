@@ -619,7 +619,7 @@ void subMenuInsumos(){
 		cout << "\t\t\tMENU" << endl;
 		cout << "----------------------------------" << endl;
 		cout << "||  [1] Listar insumos" << endl;
-		cout << "||  [2] Buscar insumos" << endl;
+	bool_constant<bool __v>t << "||  [2] Buscar insumos" << endl;
 		cout << "||  [3] Eliminar insumos" << endl;
 		cout << "||  [4] Volver al menu" << endl;
         cout << "||    Digite una opcion \t"; 
