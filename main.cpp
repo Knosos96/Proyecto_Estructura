@@ -5,19 +5,18 @@
 #include <stdio.h>
 #include <string>
 
+
 using namespace std;
 
 ///////////////////////////////////////////////////
-
 /////////////////////////STRUCTS DEL PROGRAMA///////////
 struct ventas {
-	string cod;
+	int cod;
 	string nom_cli;
 	string nom_pro;
 	int cantidad;
 	float precioUnit;
 	float precioTotal;
-	ventas* sig;
 };
 typedef struct ventas Ventas;
 
@@ -64,7 +63,10 @@ struct nodo{
 typedef struct nodo *ListaEn;
 
 /////////////////////////////////////////////////////////////////////////
-
+ListaEn Lista=NULL,Lista1=NULL;
+NodoArbol3 *Arbol_Venta=NULL;
+NodoArbol *Arbol_Insumo=NULL;
+/////////////////////////////////////////////////////////////////////////
 void insertarInicio(ListaEn &lista, string valor){
      ListaEn lista1;
      lista1 = new(struct nodo);
@@ -151,17 +153,58 @@ string buscarElemento(ListaEn lista, string valor){
     {
         if(q->dato==valor)
         {
-            cout<<endl<<" Encontrada en posicion "<< i <<endl;
+            //cout<<endl<<" Encontrada en posicion "<< i <<endl;
             busc = 1;
             return q->dato;
         }
         q = q->next;
         i++;
     }
- 
-    if(busc==0)
-        cout<<"\n\n Numero no encontrado..!"<< endl;
+    
+  if(busc==0){
+    cout<<"\n\n Codigo no encontrado..!"<< endl;
+    return "XXXX";
+    }
+        
 }
+
+string buscarElementoNombre(ListaEn lista,string valor){
+    ListaEn q = lista;
+    int  busc = 0;
+  
+  while(q!=NULL)
+    {
+        if(q->dato==valor)
+        {
+            busc = 1;
+            q=q->next;
+            return q->dato;
+        }
+        q = q->next;
+        
+    }
+}
+
+string buscarElementoPrecio(ListaEn lista,string valor){
+    ListaEn q = lista;
+    int  busc = 0,i=1;
+  
+  while(q!=NULL)
+    {
+        if(q->dato==valor)
+        {
+            while(i<5){
+               q=q->next;
+               i++;
+            }
+
+            return q->dato;
+        }
+        q = q->next;
+        
+    }
+}
+
 
 void ImprimirLista(ListaEn lista){
 
@@ -253,7 +296,7 @@ void menuCliente(nodoArbol1 *a){
     cin>>opcion;
     switch(opcion){
         case 1:
-            mostrarArbol(a);
+            //mostrarArbol(a);
             break;
         case 2:
             //buscarCliente(a,buscar);
@@ -422,7 +465,7 @@ NodoArbol* retirarInsumo(NodoArbol* r, Insumo* v){
 void listarInsumos(){
   
 }
-void buscarInsumo(){
+void buscarInsumo(nodoArbol* ArbolInsumo){
   
 }
 void eliminarInsumo(){
@@ -431,16 +474,15 @@ void eliminarInsumo(){
 
 //////////////////////////////////////////////////////////////////
 ///////////////////////////VENTAS//////////////////////////////////////////////////
-Ventas* crearVentas(string cod,string nom_cli,string nom_pro,int cantidad,float precioUnit,float precioTotal){
-    
-    Ventas* node=(Ventas*)malloc(sizeof(Ventas));
-    node->cod=cod;
-    node->nom_cli=nom_cli;
-    node->nom_pro=nom_pro;
-    node->cantidad=cantidad;
-    node->precioUnit=precioUnit;
-    node->precioTotal=precioTotal;
-    return node;
+Ventas* crearVenta(int codIn, string nombIn, string nompro, int cant, float precio,float precioT){
+    Ventas* i= new Ventas();
+    i->cod = codIn;
+    i->nom_cli = nombIn;
+    i->nom_pro = nompro;
+    i->cantidad = cant;
+    i->precioUnit = precio;
+    i->precioTotal=precioT;
+    return i;
 }
 /////////////////////////////////
 void imprimirVentas(Ventas *venta){
@@ -456,13 +498,19 @@ void imprimirVentas(Ventas *venta){
     
 }
 ///////////////////////////////////////////////////////////
+void crearArbol(NodoArbol3 *raiz){
+  raiz = NULL;
+  return;
+}
 
-NodoArbol3 *crearArbol(Ventas* ventas,NodoArbol3 *izq,NodoArbol3 *der){
+
+NodoArbol3 *crearNodo(Ventas* ventas,NodoArbol3 *izq,NodoArbol3 *der){
     
-    NodoArbol3 * c = (NodoArbol3*)malloc(sizeof(NodoArbol3));
+    NodoArbol3 * c = new NodoArbol3();
     c->sell=ventas;
     c->izq=izq;
     c->der=der;
+    //cout<<"Hola";
     return c;
 }
 //////////////////////////////////////////////////////////////
@@ -474,44 +522,42 @@ void ImprimirArbol(NodoArbol3 *n){
     }
 }
 /////////////////////////////////////////////////////////////
-Ventas *Buscar(NodoArbol3 *n,string s){
-    
+Ventas *Buscar(NodoArbol3 *n,int valor){
+    //Ventas *venta;
     if (n == NULL){
         cout<<"No hay Venta\n";
-        return NULL;
+        return NULL; 
     }
-    else if(s.compare(n->sell->cod)==0)
+    else if(valor==n->sell->cod)
         return n->sell;
-    else if(s.compare(n->sell->cod)>0)
-        return (Buscar(n->der,s));
+    else if(valor>n->sell->cod)
+        return (Buscar(n->der,valor));
     else 
-        return (Buscar(n->izq,s));
+        return (Buscar(n->izq,valor));
 }
 /////////////////////////////////////////////////////////////
-NodoArbol3 *Insertar(NodoArbol3 * nodo, Ventas* n){
-    if(nodo==NULL){
-        nodo=(NodoArbol3*)malloc(sizeof(NodoArbol3));
-        nodo->sell=n;
-        nodo->izq=NULL;
-        nodo->der=NULL;
-    }
-    else if(n->cod.compare(nodo->sell->cod)<0)
-        nodo->izq=Insertar(nodo->izq,n);
-    else if(n->cod.compare(nodo->sell->cod)>0)
-        nodo->der=Insertar(nodo->der,n);
-    return nodo;
-    
+NodoArbol3 *Insertar_Venta(NodoArbol3 *nodo, Ventas *venta) {
+  if(nodo==NULL){
+     return crearNodo(venta,NULL,NULL);
+  }
+  if(venta->cod<=nodo->sell->cod){
+    nodo->izq=Insertar_Venta(nodo->izq,venta);
+  }
+  else{
+    nodo->der=Insertar_Venta(nodo->der,venta);
+  }
+  return nodo;
 }
-//////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////
 
 NodoArbol3 *retirar(NodoArbol3 *nodo, Ventas* v){
     NodoArbol3 *nodo1,*nodo2;
     
     if(nodo==NULL)
         return NULL;
-    else if(v->cod.compare(nodo->sell->cod)<0)
+    else if(v->cod<nodo->sell->cod)
         nodo->izq=retirar(nodo->izq,v);
-    else if(v->cod.compare(nodo->sell->cod)>0)
+    else if(v->cod>nodo->sell->cod)
         nodo->der=retirar(nodo->der,v);
         
     else{
@@ -549,7 +595,6 @@ NodoArbol3 *retirar(NodoArbol3 *nodo, Ventas* v){
 /////////////////////////LEER ARCHIVOS//////////////////////////////
 void AlmacenarArchivo(ListaEn &lista,ListaEn &lista1){
 
-  
    ifstream archivo("Insumos.csv");
    ifstream archivo1("Clientes.csv");
    string linea,linea1;
@@ -569,19 +614,11 @@ void AlmacenarArchivo(ListaEn &lista,ListaEn &lista1){
         getline(stream, IMAGENES, delimitador);
         getline(stream, PRECIOS, delimitador);
 
-        insertarInicio(lista, CODIGO);
-        insertarInicio(lista, NOMBRES);
-        insertarInicio(lista, CATEGORIAS);
-        insertarInicio(lista, IMAGENES);
-        insertarInicio(lista,PRECIOS);
-     
-        // Imprimir
-        //cout << "==================================" << endl;
-        //cout << " CODIGO: " << CODIGO << endl;
-        //cout << " NOMBRE: " << NOMBRES << endl;
-        //cout << " CATEGORIA: " << CATEGORIAS << endl;
-        //cout << " IMAGEN DE VENTA: " << IMAGENES << endl;
-        //cout << " Precio de venta: " << PRECIOS << endl;
+        insertarFinal(lista, CODIGO);
+        insertarFinal(lista, NOMBRES);
+        insertarFinal(lista, CATEGORIAS);
+        insertarFinal(lista, IMAGENES);
+        insertarFinal(lista,PRECIOS);
    }
   
    while(getline(archivo1,linea1)){
@@ -595,21 +632,187 @@ void AlmacenarArchivo(ListaEn &lista,ListaEn &lista1){
         getline(stream, dni, delimitador);
         getline(stream, telefono, delimitador);
 
-        insertarInicio(lista1, codigo);
-        insertarInicio(lista1, nombre);
-        insertarInicio(lista1, apellido);
-        insertarInicio(lista1, dni);
-        insertarInicio(lista1, telefono);
-         // Imprimir
-        //cout << "==================" << endl;
-        //cout << " CODIGO: " << codigo << endl;
-        //cout << " NOMBRE: " << nombre << endl;
-        //cout << " CATEGORIA: " << apellido << endl;
-        //cout << " IMAGEN DE VENTA: " <<dni << endl;
-        //cout << " Precio de venta: " <<telefono  << endl; 
+        insertarFinal(lista1, codigo);
+        insertarFinal(lista1, nombre);
+        insertarFinal(lista1, apellido);
+        insertarFinal(lista1, dni);
+        insertarFinal(lista1, telefono);
    }  
 }
+//////////////////////////////////////////////////////////////////
+//Agregar Clientes al txt
+void AgregarClientetxt(Cliente* x){
+    
+    ofstream archivo;
+    archivo.open("Clientes.txt", ios::app);
+    if (archivo.good()) {
+	    
+	    archivo<<x->cod_cl<<" "<<x->nom_cl<<" "<<x->ape_cl<<" "<<x->dni_cl<<" "<<x->tel_cl<<endl;
+	    archivo.close();
+      cout<<"Informacion Guardada Satisfactoriamente"<<endl;    
+	  }else{
+	     cout << "\n Error al querer agregar un cliente \n";
+	     
+	  }
 
+}
+//Eliminar clientes del txt
+void EliminarInfoCliente(Cliente* x){
+    ifstream archivo;
+    archivo.open("Clientes.txt", ios::app);
+    ofstream archi;
+    archi.open("Cli.txt", ios::out);
+    if (archivo.good()) {
+        int aux;
+        
+        cout<<"Ingrese el codigo:"<<endl;
+        cin>>aux;
+        
+        archivo>>x->cod_cl;
+        if (archivo.eof()){
+            cout<<"Hubo un problema!!! El archivo no contiene datos";
+            
+        }
+        while(!archivo.eof()){
+            archivo>>x->nom_cl>>x->ape_cl>>x->dni_cl>>x->tel_cl;
+            if(aux==x->cod_cl){
+                cout<<"Se elimino la Informacion";
+                
+            }
+            else{
+                archi<<x->cod_cl<<" "<<x->nom_cl<<" "<<x->ape_cl<<" "<<x->dni_cl<<" "<<x->tel_cl<<endl;
+                
+                
+                
+            }
+            archivo>>x->cod_cl;
+        }
+        archi.close();
+        archivo.close();
+        remove("Clientes.txt");
+        rename("Cli.txt","Clientes.txt");
+    }
+    else {
+        cout<<"Error al abrir el archivo";
+    }
+    
+}      
+//Agregar venta al txt
+void AgregarVentatxt(Ventas* x){
+    
+    ofstream aventas;
+    aventas.open("Ventas.txt", ios::app);
+    if (aventas.good()) {
+	    
+	    aventas<<x->cod<<" "<<x->nom_cli<<" "<<x->nom_pro<<" "<<x->cantidad<<" "<<x->precioUnit<<" "<<x->precioTotal<<endl;
+	    aventas.close();
+      cout<<"Informacion Guardada Satisfactoriamente"<<endl;    
+	}
+	else{
+	     cout << "\n Error al querer guardar la venta \n";
+	     
+	}
+
+}
+//Eliminar venta del txt
+void EliminarInfoVentas(Ventas* x){
+    ifstream aventas;
+    aventas.open("Ventas.txt", ios::app);
+    ofstream archi;
+    archi.open("Ven.txt", ios::out);
+    if (aventas.good()) {
+        int aux;
+        
+        cout<<"Ingrese el codigo:"<<endl;
+        cin>>aux;
+        
+        aventas>>x->cod;
+        if (aventas.eof()){
+            cout<<"Hubo un problema!!! El archivo no contiene datos";
+            
+        }
+        while(!aventas.eof()){
+            aventas>>x->nom_cli>>x->nom_pro>>x->cantidad>>x->precioUnit>>x->precioTotal;
+            if(aux==x->cod){
+                cout<<"Se elimino la Informacion";
+                
+            }
+            else{
+                archi<<x->cod<<" "<<x->nom_cli<<" "<<x->nom_pro<<" "<<x->cantidad<<" "<<x->precioUnit<<" "<<x->precioTotal<<endl;
+                
+                
+                
+            }
+            aventas>>x->cod;
+        }
+        archi.close();
+        aventas.close();
+        remove("Ventas.txt");
+        rename("Ven.txt","Ventas.txt");
+    }
+    else {
+        cout<<"Error al abrir el archivo";
+    }
+    
+}
+//Guardar insumo en el txt
+void AgregarInsumotxt(Insumo* x){
+    
+    ofstream ainsumo;
+    ainsumo.open("Insumo.txt", ios::app);
+    if (ainsumo.good()) {
+	    
+	    ainsumo<<x->cod_in<<" "<<x->nom_in<<" "<<x->cat_in<<" "<<x->imag_in<<" "<<x->precio_in<<endl;
+	    ainsumo.close();
+      cout<<"Informacion Guardada Satisfactoriamente"<<endl;    
+	}
+	else{
+	     cout << "\n Error al querer agregar el insumo \n";
+	     
+	}
+
+}
+//Eliminar insumo del txt
+void EliminarInfoInsumo(Insumo* y){
+    ifstream ainsumo;
+    ainsumo.open("Insumo.txt", ios::app);
+    ofstream archi;
+    archi.open("In.txt", ios::out);
+    if (ainsumo.good()) {
+        int aux;
+        
+        cout<<"Ingrese el codigo del producto:"<<endl;
+        cin>>aux;
+        
+        ainsumo>>y->cod_in;
+        if (ainsumo.eof()){
+            cout<<"Hubo un problema!!! El archivo no contiene datos";
+            
+        }
+        while(!ainsumo.eof()){
+            ainsumo>>y->nom_in>>y->cat_in>>y->imag_in>>y->precio_in;
+            if(aux==y->cod_in){
+                cout<<"Se elimino la Informacion";
+                
+            }
+            else{
+                archi<<y->cod_in<<" "<<y->nom_in<<" "<<y->cat_in<<" "<<y->imag_in<<" "<<y->precio_in<<endl;
+                
+                
+                
+            }
+            ainsumo>>y->cod_in;
+        }
+        archi.close();
+        ainsumo.close();
+        remove("Insumo.txt");
+        rename("In.txt","Insumo.txt");
+    }
+    else {
+        cout<<"Error al abrir el archivo";
+    }
+    
+}    
 void subMenuInsumos(){
     int opcion=0,opc2=0;
     string num;
@@ -619,17 +822,19 @@ void subMenuInsumos(){
 		cout << "\t\t\tMENU" << endl;
 		cout << "----------------------------------" << endl;
 		cout << "||  [1] Listar insumos" << endl;
-	bool_constant<bool __v>t << "||  [2] Buscar insumos" << endl;
+	  cout << "||  [2] Buscar insumos" << endl;
 		cout << "||  [3] Eliminar insumos" << endl;
 		cout << "||  [4] Volver al menu" << endl;
-        cout << "||    Digite una opcion \t"; 
+    cout << "||    Digite una opcion \t"; 
+    
         cin>>opc2;
         switch(opc2){
             case 1:
                 
                 break;
             case 2:
-                
+                ///buscarInsumo(ArbolInsumo);
+                system("pause");
                 break;
             case 3:
                 
@@ -640,38 +845,205 @@ void subMenuInsumos(){
         }
     }
 }
-
 ////////////////////////////////////////////////////////////////
 bool ExisteCliente(ListaEn lista,string codcli){
-  buscarElemento(lista, valor)
-  if()
+  string codigo=buscarElemento(lista,codcli);
+  if(codigo==codcli){
+    return true;
+  }
+  else{
+    return false;
+  }
+}
+
+bool ExisteInsumo(ListaEn lista, string codins){
+  string codigo=buscarElemento(lista,codins);
+    if(codigo==codins){
+    return true;
+  }
+  else{
+    return false;
+  }
+}
+
+void AgregarVenta(ListaEn &lista,ListaEn &lista1,Ventas *venta){
+  
+   string codCli;
+   string codIns;
+   string newinsu;
+   string newcli;
+   string precio;
+   int cant,ver=0;
+   bool existCli,existInsu;
+   
+  
+  while(ver!=1){
+     cout<<"Digite el codigo del cliente:";
+  cin>>codCli;
+  cout<<"Digite el codigo del insumo:";
+  cin>>codIns;
+
+  existCli=ExisteCliente(Lista1,codCli);
+  existInsu=ExisteInsumo(Lista,codIns);
+  
+  if(existCli==true && existInsu==true){
+    
+    cout << "\n\t******Codigos encontrados satisfactoriamente******" << endl;
+    cout << "\n\tDigite la cantidad del producto seleccionado a llevar: " << endl;
+		cin >> cant;
+
+    newinsu=buscarElementoNombre(Lista,codIns);
+    newcli=buscarElementoNombre(Lista1,codCli);
+    precio=buscarElementoPrecio(Lista,codIns);
+    
+    float precio1=std::stof(precio);
+
+    float precioTotal=cant*precio1;
+    cout << "\n\tGenerando Codigo..." << endl;
+    int num=4000+rand()%(5001-4000);
+    
+    venta =crearVenta(num,newinsu,newcli,cant,precio1, precioTotal);
+    Arbol_Venta=Insertar_Venta(Arbol_Venta, venta);
+    //ImprimirArbol(Arbol_Venta);
+    cout << "\n\t..Codigo Generado..." << endl;
+    cout<<"Codigo de la Venta:"<<num<<"\n";
+    cout<<"¿Desea Continuar? [SI=0]/[NO=1]:";
+    cin>>ver;
+  }
+    else{
+      cout<<"No existe Algun cliente o producto relacionado";
+      cout<<"\n¿Desea Continuar? [SI=0]/[NO=1]:";
+      cin>>ver;
+    }
+ 
+  }
+}
+
+void Buscar_Venta(NodoArbol3 *nodo){
+
+  int valor,op=0;
+  Ventas *venta;
+  while(op!=1){
+    
+    cout<<"*****Digite el codigo que desea buscar:******";
+    cout<<"\n Nota:||[1] SALIR";
+    cin>>valor;
+    venta=Buscar(nodo,valor);
+    if(venta==NULL){
+      op=1;
+    }
+    else{
+    imprimirVentas(venta);
+    cout<<"\n\t¿Que desea hacer?"<<endl;
+    cout << "|| [1] Imprimir Ventas" << endl;
+		cout << "|| [2] Salir\n" << endl;
+    cout << "|| Digite una opcion : \t " << endl; 
+    cin>>op;
+    switch(op){
+      case 1:
+        AgregarVentatxt(venta);
+        break;
+      case 2:
+        op=1;
+        break;
+    }
+  
+    }
+  }
 }
 
 
-void Agregar_Venta(){
-   string codCli=0;
-   string codIns=0;
-   bool existCli,existInsu;
+void Eliminar_Venta(NodoArbol3 *nodo){
+  Ventas *venta;
+  int valor,op=0;
+  cout<<"Digite el codigo que desea eliminar:";
+  cin>>valor;
+  venta=Buscar(nodo,valor);
+  retirar(nodo,venta);
+  cout<<"\nVenta Retirada\n"<<endl;
   
-  cout<<"Digite el codigo del cliente";
-  cin>>codCli;
-  cout<<"Digite el codigo del insumo";
-  cin>>codIns;
+}
 
-  existCli=ExisteCliente(,codCli);
-  existInsu=ExisteInsumo(,codIns);
-  
 
-  
+//////////////////////////////////////////
+void Menu_Venta(){
+  Ventas *venta;
+  int opc = 0;
+  while(opc!=5){
+    cout << "*********************************************" << endl;
+		cout << "\t.:.:.:.:.Menu de Ventas.:.:.:.:." << endl;
+		cout << "*********************************************" << endl;
+		cout << "|| [1] Agregar Ventas" << endl;
+		cout << "|| [2] Listar Ventas" << endl;
+		cout << "|| [3] Buscar Ventas" << endl;
+    cout << "|| [4] Eliminar Ventas" << endl;
+		cout << "|| [5] Salir" << endl;
+		cout << "|| Digite una opcion : \t " << endl; 
+    cin>>opc;
+    switch(opc){
+      case 1:
+        AgregarVenta(Lista,Lista1,venta);
+        break;
+      case 2:
+        ImprimirArbol(Arbol_Venta);
+        break;
+      case 3:
+        Buscar_Venta(Arbol_Venta);
+        break;
+      case 4:
+        Eliminar_Venta(Arbol_Venta);
+        break;
+      case 5:
+        opc=5;
+        break;
+    }
+  }
+}
+/////////////////////////////////////////////////////
+void MainMenu() 
+{
+	int opc = 0;
+	do {
+		cout << "*********************************************" << endl;
+		cout << "\t.:.:.:.:.Main Menu.:.:.:.:." << endl;
+		cout << "*********************************************" << endl;
+		cout << "|| [1] Menu de Clientes" << endl;
+		cout << "|| [2] Menu de Insumos" << endl;
+		cout << "|| [3] Menu de Ventas" << endl;
+		cout << "|| [4] Salir" << endl;
+		cout << "|| Digite una opcion : \t " << endl; 
+	    cin >> opc;
+		//system("cls");
+		switch (opc) 
+		{
+		case 1:
+			//subMenuClientes();
+			//system("pause");
+			break;
+		case 2:
+			//subMenuInsumos();
+			//system("pause");
+			break;
+		case 3:
+			 Menu_Venta();
+			//system("pause");
+			break;
+		case 4:
+			//system("pause");
+			break;
+		}
+		//system("cls");
+
+	} while (opc != 4);
 }
 ////////////////////////////////FUNCION PRINCIPAL///////////////////////////////////////
 int main()
 {
-	ListaEn Lista=NULL,Lista1=NULL;
   AlmacenarArchivo(Lista,Lista1);
-
-  //ImprimirLista(Lista);
+   MainMenu();
+   
   //ImprimirLista(Lista1);
-  subMenuInsumos();
-    return 0;
+  //MainMenu() ;
+  //subMenuInsumos();
+  return 0;
 }
