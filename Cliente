@@ -1,0 +1,117 @@
+#include <iostream>
+
+
+using namespace std;
+
+struct Cliente {
+	int cod_cl;
+	string nom_cl;
+	string ape_cl;
+	string dni_cl;
+	string tel_cl;
+};
+struct nodoArbol1{
+    Cliente *info;
+    nodoArbol1 *izq;
+    nodoArbol1 *der;
+    
+};
+Cliente* crearCliente(int cod, string nom, string ape, string dni, string tel){
+    Cliente* c = (Cliente*)malloc(sizeof(Cliente));
+    c->cod_cl=cod;
+    c->nom_cl=nom;
+    c->ape_cl=ape;
+    c->dni_cl=dni;
+    c->tel_cl=tel;
+    
+    return c;
+}
+nodoArbol1* crearArbol(Cliente *c, nodoArbol1* i, nodoArbol1* d){
+    nodoArbol1 * a = (nodoArbol1*)malloc(sizeof(nodoArbol1));
+    a->info = c;
+    a->izq = i;
+    a->der = d;
+    
+    return a;
+}
+void mostrarCliente(Cliente* t){
+    if (t != NULL){
+        cout<<"--------------------------"<<endl;
+        cout<<"Codigo: "<<t->cod_cl<<endl;
+        cout<<"Nombre: "<<t->nom_cl<<endl;
+        cout<<"Apellido: "<<t->ape_cl<<endl;
+        cout<<"DNI: "<<t->dni_cl<<endl;
+        cout<<"Telefono: "<<t->tel_cl<<endl;
+        cout<<"--------------------------";
+    }
+}
+void mostrarArbol(nodoArbol1 *a){
+    if (a != NULL){
+        mostrarCliente(a->info);
+        mostrarArbol(a->izq);
+        mostrarArbol(a->der);
+    }
+}
+Cliente* buscarCliente(nodoArbol1 *a, string b){
+    if (a == NULL){
+        cout<<"No existe el cliente"<<endl;
+        return 0;
+    }
+    else if (b.compare(a->info->nom_cl) == 0)
+        return a->info;
+    else if (b.compare(a->info->nom_cl) > 0)
+        return(buscarCliente(a->der, b));
+    else
+        return(buscarCliente(a->izq, b));
+}
+nodoArbol1* eliminarCliente(nodoArbol1* a,Cliente* c){
+    nodoArbol1 *t,*f;
+    if (a == NULL)
+        return NULL;
+    else if (c->nom_cl.compare(a->info->nom_cl) < 0)
+        a->izq = eliminarCliente(a->izq, c);
+    else if (c->nom_cl.compare(a->info->nom_cl) > 0)   
+        a->der = eliminarCliente(a->der, c);
+    else{
+        if (a->izq == NULL && a->der == NULL){
+            free(a);  a = NULL;   
+        }
+        else if (a->izq == NULL){
+            t = a; 
+            a = a->der;   
+            free(t);   
+        }
+        else if (a->der == NULL) {
+            t = a;   
+            a = a->izq;   
+            free (t);
+        }
+        else {
+            f = a->izq;   
+            while (f->der != NULL)   
+            {
+                f = f->der;   
+            }
+            a->info = f->info;   
+            f->info = c;   
+            a->izq = eliminarCliente(a->izq, c);   
+        }
+        
+    }
+    return a;
+    
+    
+}
+int main()
+{
+    Cliente *c1 = crearCliente(1,"Diego","Llanos","7643363","94614222");
+    Cliente *c2 = crearCliente(2,"Alejandro","Bellido","71214345","9432372");
+    nodoArbol1 *arbol= crearArbol(c1,crearArbol(c2,NULL,NULL),NULL);
+    mostrarArbol(arbol);
+    eliminarCliente(arbol,c2);
+    cout<<"\n********************"<<endl;
+    mostrarArbol(arbol);
+    
+ 
+}
+
